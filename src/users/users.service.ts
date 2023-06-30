@@ -23,12 +23,15 @@ export class UsersService {
     return createdUser;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(): Promise<User[]> {
+    // const users = await User.find().select('-password').lean()
+    const findAllUsers = await this.userModel.find({})
+    return findAllUsers;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string): Promise<User> {
+    const findUserById = await this.userModel.findById(id)
+    return findUserById
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
