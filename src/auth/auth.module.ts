@@ -6,6 +6,7 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt/dist';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './passport/jwt.strategy';
+import ms from 'ms';
 @Module({
   providers: [AuthService, LocalStrategy, JwtStrategy],
   imports: [
@@ -16,7 +17,7 @@ import { JwtStrategy } from './passport/jwt.strategy';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('ACCESS_TOKEN_SECRET'),
         signOptions: {
-          expiresIn: '60s',
+          expiresIn: ms(configService.get<string>('ACCESS_TOKEN_EXPIRE')),
         },
       }),
       inject: [ConfigService],
