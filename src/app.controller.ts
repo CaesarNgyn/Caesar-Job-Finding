@@ -5,6 +5,7 @@ import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 import { LocalAuthGuard } from './auth/guard/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
+import { Public } from './auth/decorator/public.decorator';
 @Controller()
 export class AppController {
   constructor(
@@ -12,6 +13,7 @@ export class AppController {
     private readonly authService: AuthService
   ) { }
 
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   async login(@Request() req) {
@@ -19,7 +21,6 @@ export class AppController {
   }
 
   //Test JWT
-  @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
