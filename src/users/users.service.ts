@@ -33,8 +33,15 @@ export class UsersService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'User not found'
     }
-    const findUserById = await this.userModel.findById(id)
-    return findUserById
+    const user = await this.userModel.findById(id)
+    return user
+  }
+
+  async findOneByUsername(username: string): Promise<User> {
+
+    const user = await this.userModel.findOne({ email: username })
+    // console.log(user)
+    return user
   }
 
   async update(updateUserDto: UpdateUserDto) {
@@ -42,6 +49,9 @@ export class UsersService {
   }
 
   async remove(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return 'User not found'
+    }
     const deleteUserById = await this.userModel.deleteOne({ _id: id })
     return deleteUserById
   }
