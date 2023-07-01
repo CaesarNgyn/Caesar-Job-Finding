@@ -5,6 +5,7 @@ import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
+  //The Reflector class is used to retrieve metadata associated with handlers or classes.
   constructor(private reflector: Reflector) {
     super();
   }
