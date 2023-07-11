@@ -11,9 +11,9 @@ import { Public } from 'src/auth/decorator/public.decorator';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>) {
-
-  }
+  constructor(
+    @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>
+  ) { }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { password, ...rest } = createUserDto
