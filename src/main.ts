@@ -16,8 +16,22 @@ async function bootstrap() {
   //applies the validation pipe to all routes and controllers, including third-party libraries and external endpoints.
   app.useGlobalPipes(new ValidationPipe());
 
+
+
+  //use jwt validation globally
   const reflector = app.get(Reflector)
   app.useGlobalGuards(new JwtAuthGuard(reflector))
+
+  //config cors
+  app.enableCors(
+    {
+      origin: [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000'
+      ],
+      methods: ["GET", "POST"],
+    }
+  )
 
   await app.listen(port);
 }
