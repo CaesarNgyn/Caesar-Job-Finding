@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { softDeletePlugin, SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { CompaniesModule } from './companies/companies.module';
 
 
 
@@ -26,7 +27,8 @@ import { softDeletePlugin, SoftDeleteModel } from 'soft-delete-plugin-mongoose';
     inject: [ConfigService],
   }),
     UsersModule,
-    AuthModule],
+    AuthModule,
+    CompaniesModule],
   controllers: [AppController],
   providers: [
     AppService,
