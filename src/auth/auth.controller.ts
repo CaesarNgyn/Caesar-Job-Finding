@@ -19,6 +19,7 @@ export class AuthController {
   //Test JWT
   @Get('profile')
   getProfile(@Request() req) {
+
     return req.user;
   }
 }

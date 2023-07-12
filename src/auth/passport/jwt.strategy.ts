@@ -15,9 +15,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: configService.get<string>('ACCESS_TOKEN_SECRET')
     });
   }
-
+  //after extracting the payload from the token, it will start validating
   async validate(payload: IUser) {
     const { _id, name, email, role } = payload
+    //req.user
     return {
       _id,
       name,
