@@ -15,7 +15,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>
   ) { }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto) {
     const { password, ...rest } = createUserDto
 
     const hashedPassword = await bcrypt.hash(password, 10)
@@ -25,13 +25,13 @@ export class UsersService {
     return createdUser;
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll() {
     // const users = await User.find().select('-password').lean()
     const findAllUsers = await this.userModel.find({})
     return findAllUsers;
   }
 
-  async findOne(id: string): Promise<User | string> {
+  async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'User not found'
     }
@@ -41,7 +41,7 @@ export class UsersService {
     return user
   }
 
-  async findOneByUsername(username: string): Promise<User> {
+  async findOneByUsername(username: string) {
 
     const user = await this.userModel.findOne({ email: username })
     // console.log(user)
