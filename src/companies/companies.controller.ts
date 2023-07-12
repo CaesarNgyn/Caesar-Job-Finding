@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req, Version } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
@@ -11,10 +11,13 @@ import { ResponseMessage } from 'src/decorators/message.decorator';
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) { }
 
+
   @Post()
   create(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
     return this.companiesService.create(createCompanyDto, user);
   }
+
+
 
   @Get()
   @ResponseMessage("Fetch list companies with pagination")
