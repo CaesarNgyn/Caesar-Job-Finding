@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
+import { TransformInterceptor } from './core/transform.interceptor';
 
 
 async function bootstrap() {
@@ -21,6 +22,9 @@ async function bootstrap() {
   //use jwt validation globally
   const reflector = app.get(Reflector)
   app.useGlobalGuards(new JwtAuthGuard(reflector))
+
+  //use transform interceptor globally
+  app.useGlobalInterceptors(new TransformInterceptor(reflector));
 
   //config cors
   app.enableCors(

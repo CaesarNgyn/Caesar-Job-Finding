@@ -2,9 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req } from '@
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { User } from 'src/users/decorators/user.decorator';
 import { IUser } from 'src/users/users.interface';
 import aqp from 'api-query-params';
+import { User } from 'src/decorators/user.decorator';
+import { ResponseMessage } from 'src/decorators/message.decorator';
 
 @Controller('companies')
 export class CompaniesController {
@@ -16,6 +17,7 @@ export class CompaniesController {
   }
 
   @Get()
+  @ResponseMessage("Fetch list companies with pagination")
   findAll(
     @Query() queryString: string,
     @Query("limit") limit: string,

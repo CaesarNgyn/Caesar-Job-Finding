@@ -6,7 +6,7 @@ import { User, UserDocument } from './schemas/user.schema';
 import mongoose, { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
-import { Public } from 'src/auth/decorator/public.decorator';
+import { Public } from 'src/decorators/public.decorator';
 import aqp from 'api-query-params';
 
 
