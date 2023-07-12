@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from 'src/auth/decorator/public.decorator';
+import aqp from 'api-query-params';
 
 
 @Controller('users')
@@ -17,8 +18,10 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Request() req) {
+    const { filter, limit } = aqp(req.query);
+
+    return this.usersService.findAll(filter, limit);
   }
 
   @Get(':id')

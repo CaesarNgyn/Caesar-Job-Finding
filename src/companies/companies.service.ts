@@ -6,6 +6,8 @@ import { Company, CompanyDocument } from './schemas/company.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 
 import { IUser } from 'src/users/users.interface';
+import mongoose from 'mongoose';
+import aqp from 'api-query-params';
 
 
 @Injectable()
@@ -28,8 +30,36 @@ export class CompaniesService {
     return createdCompany;
   }
 
-  findAll() {
-    return `This action returns all companies`;
+  async findAll(limit: number, currentPage: number, queryString: string) {
+    const { filter, population } = aqp(queryString)
+    let { sort }: { sort: any } = aqp(queryString)
+    delete filter.page
+
+    const offset = (currentPage - 1) * limit
+    const defaultLimit = limit ? limit : 3
+
+    const totalItems = (await this.companyModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    // using mongoose regular expression
+    // const result = await this.companyModel.find({ name: { $regex: 'vin', $options: 'i' } })
+
+    const result = await this.companyModel.find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      .sort(sort)
+
+
+
+    return {
+      meta: {
+        current: currentPage, //trang hiện tại
+        pageSize: limit, //số lượng bản ghi đã lấy
+        pages: totalPages, //tổng số trang với điều kiện query
+        total: totalItems // tổng số phần tử (số bản ghi)
+      },
+      result //kết quả query
+    };
   }
 
   findOne(id: number) {
@@ -47,7 +77,20 @@ export class CompaniesService {
       })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id: string, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return 'Company not found'
+    }
+
+    await this.companyModel.updateOne({ _id: id },
+      {
+        deletedBy: {
+          _id: user._id,
+          email: user.email
+        }
+      })
+
+    const deleteCompanyById = await this.companyModel.softDelete({ _id: id })
+    return deleteCompanyById
   }
 }

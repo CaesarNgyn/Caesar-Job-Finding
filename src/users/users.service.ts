@@ -7,6 +7,7 @@ import mongoose, { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { Public } from 'src/auth/decorator/public.decorator';
+import aqp from 'api-query-params';
 
 
 @Injectable()
@@ -25,9 +26,12 @@ export class UsersService {
     return createdUser;
   }
 
-  async findAll() {
-    // const users = await User.find().select('-password').lean()
-    const findAllUsers = await this.userModel.find({})
+  async findAll(filter, limit) {
+    let page = filter.page
+    let offset = (page - 1) * limit
+    console.log(">> page and offset", page, offset)
+    //using lean() can be a useful optimization technique when only require plain JavaScript objects from the query results and want to improve performance
+    const findAllUsers = await this.userModel.find({}).select('-password').skip(offset).limit(limit).lean()
     return findAllUsers;
   }
 
