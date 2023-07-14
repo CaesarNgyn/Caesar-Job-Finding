@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { Public } from 'src/decorators/public.decorator';
 import aqp from 'api-query-params';
+import { IUser } from './users.interface';
 
 
 @Injectable()
@@ -16,14 +17,26 @@ export class UsersService {
     @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>
   ) { }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto, user: IUser) {
     const { password, ...rest } = createUserDto
-
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const createdUser = await this.userModel.create({ ...rest, password: hashedPassword })
-    // const result = createdUser.save()
-    return createdUser;
+    const createdUser = await this.userModel.create({
+      ...rest,
+      password: hashedPassword,
+      createdBy: {
+        _id: user._id,
+        email: user.email
+      }
+    })
+
+
+    return {
+      data: {
+        _id: createdUser.id,
+        createdAt: createdUser.createdAt
+      }
+    };
   }
 
   async register(registerUserDto: RegisterUserDto) {
@@ -38,41 +51,91 @@ export class UsersService {
   }
 
 
-  async findAll(filter, limit) {
-    let page = filter.page
-    let offset = (page - 1) * limit
-    console.log(">> page and offset", page, offset)
-    //using lean() can be a useful optimization technique when only require plain JavaScript objects from the query results and want to improve performance
-    const findAllUsers = await this.userModel.find({}).select('-password').skip(offset).limit(limit).lean()
-    return findAllUsers;
+  async findAll(limit: number, currentPage: number, queryString: string) {
+    const { filter, population } = aqp(queryString)
+    let { sort }: { sort: any } = aqp(queryString)
+    delete filter.page
+
+    const offset = (currentPage - 1) * limit
+    const defaultLimit = limit ? limit : 3
+
+    const totalItems = (await this.userModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    // using mongoose regular expression
+    // const result = await this.companyModel.find({ name: { $regex: 'vin', $options: 'i' } })
+
+    const result = await this.userModel.find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      .sort(sort)
+
+
+
+    return {
+      meta: {
+        current: currentPage, //trang hiện tại
+        pageSize: limit, //số lượng bản ghi đã lấy
+        pages: totalPages, //tổng số trang với điều kiện query
+        total: totalItems // tổng số phần tử (số bản ghi)
+      },
+      result //kết quả query
+    };
   }
+
+
 
   async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'User not found'
     }
 
-    const user = await this.userModel.findOne({ _id: id })
+    const user = await this.userModel.findOne({ _id: id }).select('-password').lean()
 
-    return user
+    return {
+      data: user
+    }
   }
 
   async findOneByUsername(username: string) {
 
     const user = await this.userModel.findOne({ email: username })
-    // console.log(user)
+
     return user
   }
 
-  async update(updateUserDto: UpdateUserDto) {
-    return this.userModel.updateOne({ _id: updateUserDto._id }, { ...updateUserDto })
+  async update(updateUserDto: UpdateUserDto, user: IUser) {
+    const updatedUser = await this.userModel.updateOne({ _id: updateUserDto._id }
+      ,
+      {
+        updatedBy: {
+          _id: user._id,
+          name: user.name
+        },
+        ...updateUserDto
+      })
+    return {
+      data: {
+        updatedUser
+      }
+    }
   }
 
-  async remove(id: string) {
+  async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'User not found'
     }
-    const deleteUserById = await this.userModel.softDelete({ _id: id })
-    return deleteUserById
+    const deleteUserById = await this.userModel.findOneAndUpdate({
+      _id: id
+    }, {
+      deletedBy: {
+        _id: user._id,
+        name: user.name
+      }
+    })
+    const results = await this.userModel.softDelete({ _id: id })
+    return {
+      data: results
+    }
   }
 }
