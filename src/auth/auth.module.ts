@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './passport/jwt.strategy';
 import ms from 'ms';
 import { AuthController } from './auth.controller';
+import { UsersService } from 'src/users/users.service';
 @Module({
   providers: [AuthService, LocalStrategy, JwtStrategy],
   imports: [

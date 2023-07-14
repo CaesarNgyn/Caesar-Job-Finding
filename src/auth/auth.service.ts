@@ -3,12 +3,16 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/users/users.interface';
+import { RegisterUserDto } from 'src/users/dto/create-user.dto';
+
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService
   ) { }
+
+
 
   async validateUser(username: string, pass: string) {
     const user = await this.usersService.findOneByUsername(username);
@@ -40,5 +44,16 @@ export class AuthService {
       email,
       role
     };
+  }
+
+  async register(user: RegisterUserDto) {
+    const newUser = await this.usersService.register(user)
+    console.log("mnew user", newUser)
+    return {
+      data: {
+        _id: newUser.id,
+        createdAt: newUser.createdAt
+      }
+    }
   }
 }

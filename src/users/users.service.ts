@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
@@ -25,6 +25,18 @@ export class UsersService {
     // const result = createdUser.save()
     return createdUser;
   }
+
+  async register(registerUserDto: RegisterUserDto) {
+    const { password, ...rest } = registerUserDto
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    const role = "USER"
+
+    const createdUser = await this.userModel.create({ ...rest, password: hashedPassword, role })
+    return createdUser
+  }
+
 
   async findAll(filter, limit) {
     let page = filter.page
