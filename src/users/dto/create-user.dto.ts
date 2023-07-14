@@ -3,10 +3,10 @@ import { IsNotEmpty, IsEmail, ValidateNested, IsNotEmptyObject, IsObject } from 
 import mongoose from 'mongoose';
 
 class Company {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'ID không được để trống!' })
   _id: mongoose.Schema.Types.ObjectId
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Name không được để trống!' })
   name: string
 }
 
