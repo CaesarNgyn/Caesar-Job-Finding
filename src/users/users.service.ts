@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, NotFoundException, ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -104,11 +104,21 @@ export class UsersService {
       return 'User not found'
     }
 
-    const user = await this.userModel.findOne({ _id: id }).select('-password').lean()
+    const user = await this.userModel.findOne({ _id: id }).select('-password')
 
     return {
       data: user
     }
+  }
+
+
+  async findOneByToken(refresh_token: string) {
+
+    const user = await this.userModel.findOne({ refreshToken: refresh_token }).select('-password')
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user
   }
 
   async findOneByUsername(username: string) {

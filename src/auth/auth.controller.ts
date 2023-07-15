@@ -5,6 +5,8 @@ import { LocalAuthGuard } from "./guard/local-auth.guard";
 import { ResponseMessage } from "src/decorators/message.decorator";
 import { RegisterUserDto } from "src/users/dto/create-user.dto";
 import { Response } from "express";
+import { User } from "src/decorators/user.decorator";
+import { IUser } from "src/users/users.interface";
 
 
 @Controller('auth')
@@ -29,6 +31,22 @@ export class AuthController {
     return this.authService.register(registerUserDto)
   }
 
+
+  @Get('/account')
+  @ResponseMessage("Get user information")
+  async getInfo(@User() user: IUser) {
+    return {
+      user
+    }
+  }
+
+  @Public()
+  @Get('/refresh')
+  @ResponseMessage("Get refresh token from user")
+  async refresh(@Request() req) {
+
+    return this.authService.refresh(req.cookies['refresh_token'])
+  }
 
 
 

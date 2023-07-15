@@ -7,6 +7,7 @@ import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import ms from 'ms';
+import { UnauthorizedException } from '@nestjs/common/exceptions';
 
 
 @Injectable()
@@ -87,4 +88,44 @@ export class AuthService {
       }
     }
   }
+
+  async refresh(refreshTokenCookies: any) {
+
+    if (!refreshTokenCookies) {
+      throw new UnauthorizedException("No refresh token found.");
+    }
+
+    try {
+      const decoded = this.jwtService.verify(refreshTokenCookies, {
+        secret: this.configService.get<string>("REFRESH_TOKEN_SECRET"),
+      });
+
+      const currentUser = await this.usersService.findOneByToken(refreshTokenCookies)
+
+      console.log("current user", currentUser)
+      const payload = {
+        sub: "token refresh",
+        iss: "from server",
+        _id: currentUser._id,
+        name: currentUser.name,
+        email: currentUser.email,
+        role: currentUser.role,
+      };
+
+      return {
+        access_token: this.jwtService.sign(payload),
+        user: {
+          _id: currentUser._id,
+          name: currentUser.name,
+          email: currentUser.email,
+          role: currentUser.role,
+
+        }
+      }
+    } catch (err) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+
 }
