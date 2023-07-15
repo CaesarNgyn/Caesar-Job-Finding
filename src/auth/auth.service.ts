@@ -45,6 +45,9 @@ export class AuthService {
 
     const refresh_token = this.createRefreshToken(payload)
 
+    //update user's refresh token in database
+    this.usersService.setRefreshToken(refresh_token, _id)
+
     response.cookie('refresh_token',
       refresh_token,
       {

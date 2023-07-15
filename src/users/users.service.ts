@@ -152,4 +152,12 @@ export class UsersService {
       data: results
     }
   }
+
+  setRefreshToken = async (refresh_token: string, _id: string) => {
+    return await this.userModel.findOneAndUpdate({
+      _id
+    },
+      { refreshToken: refresh_token }
+    )
+  }
 }
