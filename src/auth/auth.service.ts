@@ -7,7 +7,7 @@ import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import ms from 'ms';
-import { UnauthorizedException } from '@nestjs/common/exceptions';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common/exceptions';
 
 
 @Injectable()
@@ -42,8 +42,6 @@ export class AuthService {
       email,
       role,
     };
-
-
     const refresh_token = this.createRefreshToken(payload)
 
     //update user's refresh token in database
@@ -89,7 +87,7 @@ export class AuthService {
     }
   }
 
-  async refresh(refreshTokenCookies: any) {
+  async refresh(refreshTokenCookies: any, response: Response) {
 
     if (!refreshTokenCookies) {
       throw new UnauthorizedException("No refresh token found.");
@@ -101,8 +99,10 @@ export class AuthService {
       });
 
       const currentUser = await this.usersService.findOneByToken(refreshTokenCookies)
+      if (!currentUser) {
+        throw new NotFoundException('User not found');
+      }
 
-      console.log("current user", currentUser)
       const payload = {
         sub: "token refresh",
         iss: "from server",
@@ -111,6 +111,22 @@ export class AuthService {
         email: currentUser.email,
         role: currentUser.role,
       };
+
+      const refresh_token = this.createRefreshToken(payload)
+
+      //update user's new refresh token in database
+      this.usersService.setRefreshToken(refresh_token, currentUser._id.toString())
+
+      //clear old cookie 
+      response.clearCookie('refresh_token')
+      response.cookie('refresh_token',
+        refresh_token,
+        {
+          httpOnly: true,
+          maxAge: ms(this.configService.get<string>("REFRESH_TOKEN_EXPIRE"))
+        }
+      )
+
 
       return {
         access_token: this.jwtService.sign(payload),
