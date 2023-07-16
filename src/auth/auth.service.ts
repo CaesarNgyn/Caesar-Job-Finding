@@ -53,7 +53,12 @@ export class AuthService {
         //preventing client-side JavaScript code from accessing the cookie and ensure that only server can access the cookie
         httpOnly: true,
         //convert into number
-        maxAge: ms(this.configService.get<string>("REFRESH_TOKEN_EXPIRE"))
+        maxAge: ms(this.configService.get<string>("REFRESH_TOKEN_EXPIRE")),
+        //ensure that the cookie is not transmitted over unsecured HTTP connections.
+        secure: true,
+        //protect against certain types of cross-site request forgery (CSRF) attacks by limiting the scope of the cookie
+        sameSite: 'none',
+
       }
     )
 
@@ -123,6 +128,8 @@ export class AuthService {
         refresh_token,
         {
           httpOnly: true,
+          sameSite: 'none',
+          secure: true,
           maxAge: ms(this.configService.get<string>("REFRESH_TOKEN_EXPIRE"))
         }
       )
@@ -158,11 +165,9 @@ export class AuthService {
         throw new NotFoundException('User not found');
       }
 
-      console.log("current user ref token before", currentUser.refreshToken)
       //clear user's refresh token in database
       currentUser.refreshToken = null
       await currentUser.save()
-      console.log("current user ref token after", currentUser.refreshToken)
 
       //clear cookies
       response.clearCookie('refresh_token')
