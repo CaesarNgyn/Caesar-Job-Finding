@@ -143,5 +143,34 @@ export class AuthService {
     }
   }
 
+  async logout(refreshTokenCookies: any, response: Response) {
+    if (!refreshTokenCookies) {
+      throw new UnauthorizedException("No refresh token found.");
+    }
 
+    try {
+      const decoded = this.jwtService.verify(refreshTokenCookies, {
+        secret: this.configService.get<string>("REFRESH_TOKEN_SECRET"),
+      });
+
+      const currentUser = await this.usersService.findOneByToken(refreshTokenCookies)
+      if (!currentUser) {
+        throw new NotFoundException('User not found');
+      }
+
+      console.log("current user ref token before", currentUser.refreshToken)
+      //clear user's refresh token in database
+      currentUser.refreshToken = null
+      await currentUser.save()
+      console.log("current user ref token after", currentUser.refreshToken)
+
+      //clear cookies
+      response.clearCookie('refresh_token')
+
+      return "ok"
+
+    } catch (err) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
 }

@@ -20,6 +20,7 @@ export class AuthController {
   @Post('/login')
   @ResponseMessage("User Login")
   async login(@Request() req,
+    //set passthrough to true so that The modified response will be passed through to the next handler/middleware
     @Res({ passthrough: true }) response: Response) {
     return this.authService.login(req.user, response)
   }
@@ -46,10 +47,16 @@ export class AuthController {
   async refresh(@Request() req,
     @Res({ passthrough: true }) response: Response
   ) {
-
     return this.authService.refresh(req.cookies['refresh_token'], response)
   }
 
 
+  @Get('/logout')
+  @ResponseMessage("Logout user")
+  async logout(@Request() req,
+    @Res({ passthrough: true }) response: Response
+  ) {
+    return this.authService.logout(req.cookies['refresh_token'], response)
+  }
 
 }
