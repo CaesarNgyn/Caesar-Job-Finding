@@ -25,8 +25,8 @@ export class UsersController {
   @ResponseMessage("Fetch user with paginate")
   findAll(
     @Query() queryString: string,
-    @Query("limit") limit: string,
-    @Query("page") page: string
+    @Query("pageSize") limit: string,
+    @Query("current") page: string
   ) {
 
 

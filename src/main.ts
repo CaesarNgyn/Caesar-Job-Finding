@@ -38,11 +38,11 @@ async function bootstrap() {
   //config cors
   app.enableCors(
     {
-      origin: [
-        'http://localhost:3000',
-        'http://127.0.0.1:3000'
-      ],
-      methods: ["GET", "POST"],
+      origin: true,
+      methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+      //enables the inclusion of credentials (such as cookies or HTTP authentication) in cross-origin requests.
+      credentials: true,
+      preflightContinue: false
     }
   )
 

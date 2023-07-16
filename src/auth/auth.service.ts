@@ -50,7 +50,7 @@ export class AuthService {
     response.cookie('refresh_token',
       refresh_token,
       {
-        //preventing client-side JavaScript code from accessing the cookie and ensure that only server can access the cookie
+        //preventing client-side JavaScript code from accessing the cookie and ensure that only server can access the cookie. 
         httpOnly: true,
         //convert into number
         maxAge: ms(this.configService.get<string>("REFRESH_TOKEN_EXPIRE")),
