@@ -11,7 +11,7 @@ class Company {
 }
 
 export class CreateUserDto {
-  @IsNotEmpty({ message: 'Email không được để trống!' })
+  @IsNotEmpty({ message: 'Name không được để trống!' })
   name: string;
 
 

@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { softDeletePlugin, SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { CompaniesModule } from './companies/companies.module';
+import { JobsModule } from './jobs/jobs.module';
 
 
 
@@ -28,7 +29,8 @@ import { CompaniesModule } from './companies/companies.module';
   }),
     UsersModule,
     AuthModule,
-    CompaniesModule],
+    CompaniesModule,
+    JobsModule],
   controllers: [AppController],
   providers: [
     AppService,
