@@ -13,6 +13,7 @@ export class CompaniesController {
 
 
   @Post()
+  @ResponseMessage("Create a company")
   create(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
     return this.companiesService.create(createCompanyDto, user);
   }
@@ -33,11 +34,14 @@ export class CompaniesController {
 
 
   @Get(':id')
+  @ResponseMessage("Fetch a company by ID")
   findOne(@Param('id') id: string) {
-    return this.companiesService.findOne(+id);
+    return this.companiesService.findOne(id);
   }
 
   @Patch(':id')
+  @ResponseMessage("Update a company")
+
   update(
     @Param('id') id: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
@@ -45,7 +49,10 @@ export class CompaniesController {
     return this.companiesService.update(id, updateCompanyDto, user);
   }
 
+
   @Delete(':id')
+  @ResponseMessage("Delete a company")
+
   remove(@Param('id') id: string, @User() user: IUser) {
     return this.companiesService.remove(id, user);
   }

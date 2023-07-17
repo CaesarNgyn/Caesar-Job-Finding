@@ -22,7 +22,7 @@ export class UsersController {
   }
 
   @Get()
-  @ResponseMessage("Fetch user with paginate")
+  @ResponseMessage("Fetch list users with paginate")
   findAll(
     @Query() queryString: string,
     @Query("pageSize") limit: string,

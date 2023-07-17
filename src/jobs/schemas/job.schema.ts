@@ -13,7 +13,7 @@ export class Job {
   @Prop()
   skills: string[];
 
-  @Prop()
+
   @Prop({ type: Object })
   company: {
     _id: mongoose.Schema.Types.ObjectId,
@@ -36,10 +36,10 @@ export class Job {
   @Prop()
   description: string;
 
-  @Prop()
+  @Prop({ type: Date })
   startDate: Date;
 
-  @Prop()
+  @Prop({ type: Date })
   endDate: Date;
 
   @Prop()
