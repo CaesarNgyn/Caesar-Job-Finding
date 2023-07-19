@@ -5,10 +5,15 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { TransformInterceptor } from './core/transform.interceptor';
 import cookieParser from 'cookie-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+
 
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule,
+  );
   //using dot env globally
   const configService = app.get<ConfigService>(ConfigService)
 
@@ -17,6 +22,11 @@ async function bootstrap() {
 
   //applies the validation pipe to all routes and controllers, including third-party libraries and external endpoints.
   app.useGlobalPipes(new ValidationPipe());
+
+  //access public folder
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('ejs');
 
 
 
