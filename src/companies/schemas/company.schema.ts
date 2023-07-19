@@ -14,6 +14,8 @@ export class Company {
   @Prop()
   description: string;
 
+  @Prop()
+  logo: string;
 
   //in which types cannot be implicitly reflected (for example, arrays or nested object structures), types must be indicated explicitly
   @Prop({ type: Object })

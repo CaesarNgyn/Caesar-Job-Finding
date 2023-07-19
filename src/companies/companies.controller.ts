@@ -6,6 +6,7 @@ import { IUser } from 'src/users/users.interface';
 import aqp from 'api-query-params';
 import { User } from 'src/decorators/user.decorator';
 import { ResponseMessage } from 'src/decorators/message.decorator';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('companies')
 export class CompaniesController {
@@ -19,7 +20,7 @@ export class CompaniesController {
   }
 
 
-
+  @Public()
   @Get()
   @ResponseMessage("Fetch list companies with pagination")
   findAll(
@@ -33,6 +34,7 @@ export class CompaniesController {
 
 
 
+  @Public()
   @Get(':id')
   @ResponseMessage("Fetch a company by ID")
   findOne(@Param('id') id: string) {
@@ -41,7 +43,6 @@ export class CompaniesController {
 
   @Patch(':id')
   @ResponseMessage("Update a company")
-
   update(
     @Param('id') id: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
