@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateJobDto } from './dto/create-job.dto';
-import { UpdateJobDto } from './dto/update-job.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Job, JobDocument } from './schemas/job.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
-import { UpdateCompanyDto } from 'src/companies/dto/update-company.dto';
 import mongoose from 'mongoose';
 import aqp from 'api-query-params';
+import { UpdateJobDto } from './dto/update-job.dto';
 
 @Injectable()
 export class JobsService {
@@ -53,7 +52,7 @@ export class JobsService {
       .sort(sort)
       .populate(population)
       .sort(sort)
-      .select('-password')
+
 
 
 
@@ -103,8 +102,8 @@ export class JobsService {
         }
       })
 
-    const deleteCompanyById = await this.jobModel.softDelete({ _id: id })
-    return deleteCompanyById
+    const deleteJobById = await this.jobModel.softDelete({ _id: id })
+    return deleteJobById
   }
 }
 
