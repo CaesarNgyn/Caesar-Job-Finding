@@ -43,12 +43,12 @@ export class ResumesController {
   }
 
   @Patch(':id')
-  @ResponseMessage('Update a Resume')
+  @ResponseMessage('Update status Resume')
   update(
     @Param('id') id: string,
-    @Body() updateResumeDto: UpdateResumeDto,
+    @Body("status") status: string,
     @User() user: IUser) {
-    return this.resumesService.update(id, updateResumeDto, user);
+    return this.resumesService.update(id, status, user);
   }
 
 

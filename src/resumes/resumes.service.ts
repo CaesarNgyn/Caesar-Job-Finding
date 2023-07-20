@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateResumeDto, CreateUserCVDto } from './dto/create-resume.dto';
 import { UpdateResumeDto } from './dto/update-resume.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -89,24 +89,32 @@ export class ResumesService {
 
   }
 
-  async update(id: string, updateResumeDto: UpdateResumeDto, user: IUser) {
-    const historyEntry = {
-      status: updateResumeDto.status,
-      updatedAt: new Date(),
-      updatedBy: {
-        _id: user._id,
-        email: user.email,
-      },
-    };
-    return await this.resumeModel.updateOne({ _id: id },
+  async update(id: string, status: string, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('resume not found')
+    }
+    const updatedResume = await this.resumeModel.updateOne(
+      { _id: id },
       {
-        $push: { history: historyEntry },
-        ...updateResumeDto,
+        status: status,
         updatedBy: {
           _id: user._id,
-          email: user.email,
+          email: user.email
         },
-      })
+        $push: {
+          history: {
+            status: status,
+            updatedAt: new Date,
+            updatedBy: {
+              _id: user._id,
+              email: user.email
+            }
+          }
+        }
+      }
+    )
+
+    return updatedResume
 
   }
 
