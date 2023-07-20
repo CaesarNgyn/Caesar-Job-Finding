@@ -49,6 +49,7 @@ export class ResumesService {
 
   async findAll(limit: number, currentPage: number, queryString: string) {
     const { filter, population } = aqp(queryString)
+
     let { sort }: { sort: any } = aqp(queryString)
     delete filter.current
     delete filter.pageSize
@@ -65,7 +66,7 @@ export class ResumesService {
       .limit(defaultLimit)
       .sort(sort)
       .populate(population)
-      .sort(sort)
+
 
     return {
       meta: {
