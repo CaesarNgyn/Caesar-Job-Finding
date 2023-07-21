@@ -45,6 +45,11 @@ export class UsersService {
     };
   }
 
+  async getHashPassword(password: string) {
+    const hashedPassword = await bcrypt.hash(password, 10)
+    return hashedPassword
+  }
+
   async register(registerUserDto: RegisterUserDto) {
     const { password, ...rest } = registerUserDto
 
