@@ -127,10 +127,12 @@ export class UsersService {
 
     const user = await this.userModel.findOne(
       { email: username }).populate({
-        path: 'role', select: {
-          name: 1, permissions: 1
-
-        }
+        path: 'role',
+        select: 'name permissions',
+        populate: {
+          path: 'permissions',
+          select: 'name apiPath'
+        },
       })
 
     return user
