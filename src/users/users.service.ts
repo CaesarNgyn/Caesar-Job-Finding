@@ -20,9 +20,9 @@ export class UsersService {
   async create(createUserDto: CreateUserDto, user: IUser) {
     const { password, ...rest } = createUserDto
 
-    const isExist = await this.userModel.findOne({ email: createUserDto.email })
+    const isExisted = await this.userModel.findOne({ email: createUserDto.email })
 
-    if (isExist) {
+    if (isExisted) {
       throw new BadRequestException(`Email ${createUserDto.email} đã tồn tại. Vui lòng đăng ký Email khác.`)
     }
     const hashedPassword = await bcrypt.hash(password, 10)
