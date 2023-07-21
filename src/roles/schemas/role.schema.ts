@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, SchemaTimestampsConfig, Types } from 'mongoose';
 import { Permission } from 'src/permissions/schemas/permission.schema';
 
-export type RoleDocument = HydratedDocument<Role>;
+export type RoleDocument = HydratedDocument<Role> & SchemaTimestampsConfig;
 
 @Schema({ timestamps: true })
 export class Role {
@@ -16,7 +16,7 @@ export class Role {
   @Prop()
   isActive: boolean;
 
-  @Prop({ type: [mongoose.Schema.Types.Array], ref: Permission.name })
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: Permission.name })
   permissions: Permission[]
 
   //in which types cannot be implicitly reflected (for example, arrays or nested object structures), types must be indicated explicitly
