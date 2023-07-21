@@ -38,10 +38,10 @@ export class UsersService {
 
 
     return {
-      data: {
-        _id: createdUser.id,
-        createdAt: createdUser.createdAt
-      }
+
+      _id: createdUser.id,
+      createdAt: createdUser.createdAt
+
     };
   }
 
@@ -105,11 +105,12 @@ export class UsersService {
       return 'User not found'
     }
 
-    const user = await this.userModel.findOne({ _id: id }).select('-password')
+    const user = await this.userModel.findOne({ _id: id }).select('-password').populate({
+      path: 'role',
+      select: { name: 1, _id: 1 }
+    })
 
-    return {
-      data: user
-    }
+    return user
   }
 
 
@@ -124,7 +125,13 @@ export class UsersService {
 
   async findOneByUsername(username: string) {
 
-    const user = await this.userModel.findOne({ email: username })
+    const user = await this.userModel.findOne(
+      { email: username }).populate({
+        path: 'role', select: {
+          name: 1, permissions: 1
+
+        }
+      })
 
     return user
   }
@@ -139,16 +146,20 @@ export class UsersService {
         },
         ...updateUserDto
       })
-    return {
-      data: {
-        updatedUser
-      }
-    }
+    return updatedUser
+
+
+
+
   }
 
   async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'User not found'
+    }
+    const foundUser = await this.userModel.findById({ _id: id })
+    if (foundUser.email === "admin@gmail.com") {
+      throw new BadRequestException("Không thể xóa tài khoản admin")
     }
     const deleteUserById = await this.userModel.findOneAndUpdate({
       _id: id
@@ -159,9 +170,8 @@ export class UsersService {
       }
     })
     const results = await this.userModel.softDelete({ _id: id })
-    return {
-      data: results
-    }
+    return results
+
   }
 
   setRefreshToken = async (refresh_token: string, _id: string) => {
