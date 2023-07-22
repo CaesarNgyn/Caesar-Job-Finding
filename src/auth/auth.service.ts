@@ -27,12 +27,15 @@ export class AuthService {
     if (user) {
       const isValid = await bcrypt.compare(pass, user.password)
       if (isValid) {
+        //allows the code to access properties like _id and name directly without type errors.
         const userRole = user.role as unknown as { _id: string, name: string }
         const temp = await this.rolesService.findOne(userRole._id)
         const objUser = {
+          //user is a mongodb model so we have to convert it into JS object
           ...user.toObject(),
           permissions: temp?.permissions ?? []
         }
+
         return objUser
       }
     }

@@ -1,4 +1,4 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../../decorators/public.decorator';
@@ -21,10 +21,21 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err, user, info) {
+  handleRequest(err, user, info, context: ExecutionContext) {
+    const request = context.switchToHttp().getRequest()
     // after validating in strategy, it will pass the user object into this func
     if (err || !user) {
       throw err || new UnauthorizedException("Token không hợp lệ");
+    }
+    const targetMethod = request.method
+    const targetPath = request.route?.path
+
+    const isValid = user.permissions.find(permission =>
+      targetMethod === permission.method && targetPath === permission.apiPath
+    )
+    console.log("isvalid", isValid)
+    if (!isValid) {
+      throw new ForbiddenException('Bạn không có quyền thực hiện tác vụ này!')
     }
     return user;
   }
