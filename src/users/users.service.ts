@@ -9,12 +9,16 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { Public } from 'src/decorators/public.decorator';
 import aqp from 'api-query-params';
 import { IUser } from './users.interface';
+import { Role, RoleDocument } from 'src/roles/schemas/role.schema';
+import { USER_ROLE } from 'src/databases/sample';
 
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>
+    @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>,
+    @InjectModel(Role.name) private roleModel: SoftDeleteModel<RoleDocument>
+
   ) { }
 
   async create(createUserDto: CreateUserDto, user: IUser) {
@@ -60,9 +64,13 @@ export class UsersService {
     }
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const role = "USER"
+    const userRole = await this.roleModel.findOne({ name: USER_ROLE })
 
-    const createdUser = await this.userModel.create({ ...rest, password: hashedPassword, role })
+    const createdUser = await this.userModel.create({
+      ...rest,
+      password: hashedPassword,
+      role: userRole._id
+    })
     return createdUser
   }
 
@@ -121,7 +129,10 @@ export class UsersService {
 
   async findOneByToken(refresh_token: string) {
 
-    const user = await this.userModel.findOne({ refreshToken: refresh_token }).select('-password')
+    const user = (await this.userModel.findOne({ refreshToken: refresh_token }).select('-password')).populate({
+      path: "role",
+      select: "name"
+    })
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -133,11 +144,7 @@ export class UsersService {
     const user = await this.userModel.findOne(
       { email: username }).populate({
         path: 'role',
-        select: 'name permissions',
-        populate: {
-          path: 'permissions',
-          select: 'name apiPath'
-        },
+        select: 'name',
       })
 
     return user
