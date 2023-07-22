@@ -1,23 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { CreateJobDto } from './dto/create-job.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { CreateSubscriberDto } from './dto/create-subscriber.dto';
+import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Job, JobDocument } from './schemas/job.schema';
+import { Subscriber, SubscriberDocument } from './schemas/subscriber.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
-import mongoose from 'mongoose';
 import aqp from 'api-query-params';
-import { UpdateJobDto } from './dto/update-job.dto';
+import mongoose from 'mongoose';
 
 @Injectable()
-export class JobsService {
+export class SubscribersService {
   constructor(
-    @InjectModel(Job.name) private jobModel: SoftDeleteModel<JobDocument>
+    @InjectModel(Subscriber.name) private subscriberModel: SoftDeleteModel<SubscriberDocument>
   ) { }
 
-  async create(createJobDto: CreateJobDto, user: IUser) {
-    const { ...rest } = createJobDto
+  async create(createSubscriberDto: CreateSubscriberDto, user: IUser) {
+    const { ...rest } = createSubscriberDto
+    const isExisted = await this.subscriberModel.findOne({ email: createSubscriberDto.email })
+    if (isExisted) {
+      throw new BadRequestException(`Email ${createSubscriberDto.email} đã tồn tại trên hệ thống`)
+    }
 
-    const createdJob = await this.jobModel.create({
+    const createdSubscriber = await this.subscriberModel.create({
       ...rest,
       createdBy: {
         _id: user._id,
@@ -25,11 +29,9 @@ export class JobsService {
       }
     })
 
-
     return {
-
-      _id: createdJob.id,
-      createdAt: createdJob.createdAt
+      _id: createdSubscriber.id,
+      createdAt: createdSubscriber.createdAt
 
     };
   }
@@ -43,19 +45,16 @@ export class JobsService {
     const offset = (currentPage - 1) * limit
     const defaultLimit = limit ? limit : 3
 
-    const totalItems = (await this.jobModel.find(filter)).length;
+    const totalItems = (await this.subscriberModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
 
-    const result = await this.jobModel.find(filter)
+    const result = await this.subscriberModel.find(filter)
       .skip(offset)
       .limit(defaultLimit)
       .sort(sort)
       .populate(population)
       .sort(sort)
-
-
-
 
     return {
       meta: {
@@ -70,19 +69,19 @@ export class JobsService {
 
   async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return 'job not found'
+      return 'Subscriber not found'
     }
 
-    const job = await this.jobModel.findOne({ _id: id })
+    const subscriber = await this.subscriberModel.findOne({ _id: id })
 
-    return job
+    return subscriber
 
   }
 
-  async update(id: string, updateJobDto: UpdateJobDto, user: IUser) {
-    return await this.jobModel.updateOne({ _id: id },
+  async update(id: string, updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
+    return await this.subscriberModel.updateOne({ _id: id },
       {
-        ...updateJobDto,
+        ...updateSubscriberDto,
         updatedBy: {
           _id: user._id,
           email: user.email
@@ -92,10 +91,10 @@ export class JobsService {
 
   async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return 'Job not found'
+      return 'Subscriber not found'
     }
 
-    await this.jobModel.updateOne({ _id: id },
+    await this.subscriberModel.updateOne({ _id: id },
       {
         deletedBy: {
           _id: user._id,
@@ -103,8 +102,7 @@ export class JobsService {
         }
       })
 
-    const deleteJobById = await this.jobModel.softDelete({ _id: id })
-    return deleteJobById
+    const deleteSubscriberById = await this.subscriberModel.softDelete({ _id: id })
+    return deleteSubscriberById
   }
 }
-

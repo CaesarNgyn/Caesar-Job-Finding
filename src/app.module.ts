@@ -18,6 +18,7 @@ import { SubscribersModule } from './subscribers/subscribers.module';
 
 
 
+
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
   MongooseModule.forRootAsync({
@@ -43,7 +44,8 @@ import { SubscribersModule } from './subscribers/subscribers.module';
     PermissionsModule,
     RolesModule,
     DatabasesModule,
-    SubscribersModule],
+    SubscribersModule
+  ],
   controllers: [AppController],
   providers: [
     AppService,
