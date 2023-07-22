@@ -28,12 +28,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       throw err || new UnauthorizedException("Token không hợp lệ");
     }
     const targetMethod = request.method
-    const targetPath = request.route?.path
+    const targetPath = request.route?.path as string
 
-    const isValid = user.permissions.find(permission =>
+    let isValid = user.permissions.find(permission =>
       targetMethod === permission.method && targetPath === permission.apiPath
     )
-    console.log("isvalid", isValid)
+    if (targetPath.startsWith("/api/v1/auth")) isValid = true
     if (!isValid) {
       throw new ForbiddenException('Bạn không có quyền thực hiện tác vụ này!')
     }
