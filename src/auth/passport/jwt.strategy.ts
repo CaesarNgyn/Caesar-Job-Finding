@@ -25,9 +25,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     //return permissions after validating JWT
     const userRole = role as unknown as { _id: string, name: string }
     const temp = (await this.rolesService.findOne(userRole._id)).toObject()
-    console.log('>>temp', temp)
     const addedPermissions = temp?.permissions ?? []
-    console.log("oper", addedPermissions)
+
     //req.user
     return {
       _id,
