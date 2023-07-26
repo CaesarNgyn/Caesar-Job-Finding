@@ -16,10 +16,10 @@ export class MailController {
   @ResponseMessage("Test email")
   async handleTestEmail() {
     await this.mailerService.sendMail({
-      to: "minhquan0411202@gmail.com",
-      from: '"From Caesar with love" <support@example.com>', // override default from
-      subject: 'Cho mq ngu',
-      html: '<b>NestJS Caesar Nguyen test</b>', // HTML body content
+      to: "caesarngyn@gmail.com",
+      from: '"From Caesar with love"', // override default from
+      subject: 'Tuyển dụng việc làm',
+      template: 'job.hbs', // HTML body content
     });
   }
 
