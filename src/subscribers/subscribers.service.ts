@@ -78,15 +78,18 @@ export class SubscribersService {
 
   }
 
-  async update(id: string, updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
-    return await this.subscriberModel.updateOne({ _id: id },
+  async update(updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
+    return await this.subscriberModel.updateOne(
+      { email: user.email },
       {
         ...updateSubscriberDto,
         updatedBy: {
           _id: user._id,
           email: user.email
         }
-      })
+      },
+      { upsert: true }
+    )
   }
 
   async remove(id: string, user: IUser) {
@@ -104,5 +107,10 @@ export class SubscribersService {
 
     const deleteSubscriberById = await this.subscriberModel.softDelete({ _id: id })
     return deleteSubscriberById
+  }
+
+  async getSkills(user: IUser) {
+    const { email } = user
+    return await this.subscriberModel.findOne({ email }, { skills: 1 })
   }
 }

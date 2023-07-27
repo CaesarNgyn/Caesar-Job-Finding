@@ -7,7 +7,7 @@ import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import ms from 'ms';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common/exceptions';
+import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common/exceptions';
 import { RolesService } from 'src/roles/roles.service';
 
 
@@ -24,6 +24,10 @@ export class AuthService {
 
   async validateUser(username: string, pass: string) {
     const user = await this.usersService.findOneByUsername(username);
+    if (!user) {
+      throw new BadRequestException('User not found!')
+    }
+    console.log("user", user)
     if (user) {
       const isValid = await bcrypt.compare(pass, user.password)
       if (isValid) {
@@ -44,6 +48,9 @@ export class AuthService {
 
   async login(user: IUser, response: Response) {
     const { _id, name, email, role, permissions } = user
+    if (!user) {
+      throw new BadRequestException('User not found!')
+    }
     const payload = {
       sub: "token login",
       iss: "from server",
