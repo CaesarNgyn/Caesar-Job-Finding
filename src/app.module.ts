@@ -15,27 +15,30 @@ import { RolesModule } from './roles/roles.module';
 import { DatabasesModule } from './databases/databases.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
 import { MailModule } from './mail/mail.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 
 
 
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }),
-  MongooseModule.forRootAsync({
-    imports: [ConfigModule],
-    useFactory: async (configService: ConfigService) => ({
-      uri: configService.get<string>('MONGODB_URI'),
-      dbName: configService.get<string>('DB_NAME'),
-      connectionFactory: (connection) => {
-        connection.plugin(softDeletePlugin);
-        return connection;
-      }
+  imports: [
+    ScheduleModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+        dbName: configService.get<string>('DB_NAME'),
+        connectionFactory: (connection) => {
+          connection.plugin(softDeletePlugin);
+          return connection;
+        }
+      }),
+
+
+      inject: [ConfigService],
     }),
-
-
-    inject: [ConfigService],
-  }),
     UsersModule,
     AuthModule,
     CompaniesModule,

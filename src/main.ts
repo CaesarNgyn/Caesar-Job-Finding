@@ -21,7 +21,12 @@ async function bootstrap() {
   const port = configService.get<string>('PORT')
 
   //applies the validation pipe to all routes and controllers, including third-party libraries and external endpoints.
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe(
+    {
+      //any additional properties in the incoming data that are not defined in the DTO class will be automatically stripped out by the ValidationPipe before validation
+      whitelist: true
+    }
+  ));
 
   //access public folder
   app.useStaticAssets(join(__dirname, '..', 'public'));
