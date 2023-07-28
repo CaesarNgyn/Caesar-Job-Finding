@@ -7,8 +7,9 @@ import aqp from 'api-query-params';
 import { IUser } from './users.interface';
 import { User } from 'src/decorators/user.decorator';
 import { ResponseMessage } from 'src/decorators/message.decorator';
+import { ApiTags } from "@nestjs/swagger";
 
-
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(

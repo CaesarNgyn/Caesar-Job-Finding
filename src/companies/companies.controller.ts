@@ -7,7 +7,9 @@ import aqp from 'api-query-params';
 import { User } from 'src/decorators/user.decorator';
 import { ResponseMessage } from 'src/decorators/message.decorator';
 import { Public } from 'src/decorators/public.decorator';
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags('companies')
 @Controller('companies')
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) { }

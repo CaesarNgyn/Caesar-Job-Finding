@@ -9,6 +9,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import helmet from 'helmet';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 
 
 
@@ -51,7 +53,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api')
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: ['1', '2'],
+    defaultVersion: ['1'],
 
   });
   //config cors
@@ -71,6 +73,29 @@ async function bootstrap() {
   //set up helmet
   //The helmet middleware adds several security-related HTTP headers to the responses sent by application.
   app.use(helmet())
+
+  //set up swagger
+  const config = new DocumentBuilder()
+    .setTitle('Caesar Job Finding APIs Document')
+    .setDescription('All Modules APIs')
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'Bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+      },
+      'token',
+    )
+    .addSecurityRequirements('token')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    }
+  },);
 
   await app.listen(port);
 }

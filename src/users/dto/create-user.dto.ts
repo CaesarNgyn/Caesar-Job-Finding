@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsEmail, ValidateNested, IsNotEmptyObject, IsObject, IsMongoId } from 'class-validator';
+import { IsNotEmpty, IsEmail, ValidateNested, IsNotEmptyObject, IsObject, IsMongoId, IsString } from 'class-validator';
 import mongoose from 'mongoose';
-
+import { ApiProperty } from '@nestjs/swagger';
 class Company {
   @IsNotEmpty({ message: 'ID không được để trống!' })
   _id: mongoose.Schema.Types.ObjectId
@@ -64,4 +64,18 @@ export class RegisterUserDto {
   address: string;
 
 
+}
+
+export class UserLoginDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'admin@gmail.com', description: 'username' })
+  readonly username: string;
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '123456',
+    description: 'password',
+  })
+  readonly password: string;
 }

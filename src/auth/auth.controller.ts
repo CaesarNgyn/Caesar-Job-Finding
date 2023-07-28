@@ -3,13 +3,14 @@ import { AuthService } from "./auth.service";
 import { Public } from "../decorators/public.decorator";
 import { LocalAuthGuard } from "./guard/local-auth.guard";
 import { ResponseMessage } from "src/decorators/message.decorator";
-import { RegisterUserDto } from "src/users/dto/create-user.dto";
+import { RegisterUserDto, UserLoginDto } from "src/users/dto/create-user.dto";
 import { Response } from "express";
 import { User } from "src/decorators/user.decorator";
 import { IUser } from "src/users/users.interface";
 import { RolesService } from "src/roles/roles.service";
+import { ApiBody, ApiTags } from "@nestjs/swagger";
 
-
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -20,6 +21,7 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
+  @ApiBody({ type: UserLoginDto })
   @ResponseMessage("User Login")
   async login(@Request() req,
     //set passthrough to true so that The modified response will be passed through to the next handler/middleware

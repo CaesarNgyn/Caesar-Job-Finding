@@ -7,7 +7,9 @@ import { User } from 'src/decorators/user.decorator';
 import { IUser } from 'src/users/users.interface';
 import { ResponseMessage } from 'src/decorators/message.decorator';
 import { Public } from 'src/decorators/public.decorator';
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags('resumes')
 @Controller('resumes')
 export class ResumesController {
   constructor(private readonly resumesService: ResumesService) {
