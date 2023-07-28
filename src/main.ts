@@ -7,6 +7,8 @@ import { TransformInterceptor } from './core/transform.interceptor';
 import cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import helmet from 'helmet';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 
 
@@ -39,6 +41,8 @@ async function bootstrap() {
   const reflector = app.get(Reflector)
   app.useGlobalGuards(new JwtAuthGuard(reflector))
 
+
+
   //use transform interceptor globally
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
 
@@ -63,6 +67,10 @@ async function bootstrap() {
 
   //set up cookies
   app.use(cookieParser())
+
+  //set up helmet
+  //The helmet middleware adds several security-related HTTP headers to the responses sent by application.
+  app.use(helmet())
 
   await app.listen(port);
 }
