@@ -91,12 +91,13 @@ async function bootstrap() {
     .addSecurityRequirements('token')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('', app, document, {
+  SwaggerModule.setup('swagger', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
     }
   },);
 
+  //run compodoc documentaiton: npx @compodoc/compodoc -p tsconfig.json -s
   await app.listen(port);
 }
 bootstrap();
