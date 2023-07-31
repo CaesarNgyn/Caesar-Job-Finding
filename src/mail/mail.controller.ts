@@ -28,7 +28,7 @@ export class MailController {
 
   @Get()
   @Public()
-  @ResponseMessage("Test email")
+  @ResponseMessage("Send email")
   @Cron('0 0 0 * * 0') // 00:00 AM every Sunday
   async handleTestEmail() {
     const subscribers = await this.subscriberModel.find({});
