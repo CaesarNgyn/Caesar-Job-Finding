@@ -36,7 +36,7 @@ change '.env.sample' to '.env' and fill in neccessary parts
 
 ```terminal
 $ cd server   // go to server folder
-$ npm npm install --legacy-peer-deps       // npm install packages
+$ npm install --legacy-peer-deps       // npm install packages
 $ npm run dev // run it locally
 ```
 
