@@ -39,3 +39,7 @@ lerna-debug.log*
 
 #documentation
 documentation
+
+#docker
+docker-compose.yaml
+Dockerfile
